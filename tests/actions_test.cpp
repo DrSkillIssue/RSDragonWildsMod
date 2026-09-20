@@ -122,7 +122,7 @@ TEST_F(Actions, releases_wheel_calls_when_the_controller_ends_play_in_a_dead_wor
     press(F5);
     ASSERT_EQ(Fake::game.selections, 1);
     Fake::destroy_world_functions();
-    Fake::end_play(reinterpret_cast<AActor*>(Fake::game.controller), static_cast<EEndPlayReason>(0));
+    end_world();
     ASSERT_FALSE(Fake::rooted());
     ASSERT_EQ(Fake::game.parameter_allocations, 0u);
 }

@@ -33,6 +33,7 @@ struct Fixture : ::testing::Test
     void tick() { mod->tick(Fake::time); }
     void tick(std::uint64_t advance) { Fake::time += advance; tick(); }
     void restart() { Fake::call(Fake::game.controller, L"ClientRestart"); }
+    void end_world() { Fake::records.at(Fake::game.controller).serial = 0; tick(); }
 
     void start()
     {

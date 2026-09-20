@@ -84,6 +84,7 @@ TEST_F(Setup, picks_an_unlocked_spell_from_the_list)
     ASSERT_EQ(Fake::game.rows.size(), 2u) << lines();
     ASSERT_TRUE(Fake::game.tooltips.size() == 4 && Fake::records.at(Fake::object_field(Fake::game.rows[0], 16)).visibility.empty());
     ASSERT_TRUE(member(Fake::game.rows[1], L"SpellData").read<UObject*>(L"ObjectProperty") == Fake::game.spell && member(Fake::game.rows[1], L"bUnlocked").boolean());
+    ASSERT_TRUE(Fake::object_field(Fake::game.rows[0], 32) == Fake::game.other_perk && Fake::object_field(Fake::game.rows[1], 32) == Fake::game.perk);
     ASSERT_TRUE(Fake::game.class_loads == 2 && Fake::game.log.empty() && ini().find("Slot2 = F6,\n") != std::string::npos);
     Fake::game.hovered_frame = Fake::game.rows[1];
     press(RC::Input::LEFT_MOUSE_BUTTON);

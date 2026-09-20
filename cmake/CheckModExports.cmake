@@ -1,4 +1,4 @@
-set(required RegisterEndPlayPreCallback RegisterEngineTickPostCallback IsRootSet start_mod uninstall_mod)
+set(required RegisterEngineTickPostCallback IsRootSet start_mod uninstall_mod)
 set(forbidden RegisterProcessEventPreCallback hostfxr dw_spellbar_ trace.enabled)
 
 foreach(name IN LISTS required)

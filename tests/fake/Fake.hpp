@@ -56,7 +56,7 @@ struct State
     double last_icon_x{}, last_icon_y{}, last_scale_y{}, world_time{};
     int perk_count = 3;
     UObject* wheel{}, *wheel_template{}, *spellbook_wheel{}, *component{}, *spell{}, *other{}, *magic{};
-    UObject* skill{}, *skill_default{}, *locked_spell{}, *locked_perk{}, *perk_component{};
+    UObject* skill{}, *skill_default{}, *locked_spell{}, *perk{}, *other_perk{}, *locked_perk{}, *perk_component{};
     unsigned char perk_soft[3 * 40]{};
     UObject* assigned_spells[48]{};
     UObject* slices[12]{};
@@ -71,7 +71,7 @@ struct State
     FScriptMapLayout map_layout{8, {12, 16, 12, {8, 16}}};
     std::vector<std::string> log;
     std::vector<std::uint64_t> callbacks;
-    std::uint64_t callback_ids{}, tick_callback{}, end_play_callback{};
+    std::uint64_t callback_ids{}, tick_callback{};
     RC::Input::KeySet key_set;
 };
 
@@ -80,7 +80,6 @@ extern std::unordered_map<const void*, Record> records;
 extern std::vector<std::unique_ptr<unsigned char[]>> storage;
 extern std::vector<UObject*> objects;
 extern std::vector<std::wstring> names;
-extern std::function<void(AActor*, EEndPlayReason)> end_play;
 extern std::function<void(Hook::TCallbackIterationData<void>&, UEngine*, float, bool)> engine_tick;
 extern std::uint64_t time;
 extern UClass* widget_class;

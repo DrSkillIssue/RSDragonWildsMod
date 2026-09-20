@@ -62,14 +62,14 @@ TEST_F(Manager, keeps_the_bar_on_an_unchanged_configuration)
     idle(10);
 }
 
-TEST_F(Manager, tears_down_on_controller_end_play_and_rebuilds_on_the_next_restart)
+TEST_F(Manager, tears_down_when_the_controller_dies_and_rebuilds_on_the_next_restart)
 {
     start();
-    Fake::end_play(reinterpret_cast<AActor*>(Fake::game.viewport), static_cast<EEndPlayReason>(0));
-    ASSERT_TRUE(Fake::rooted() && Fake::game.log.empty());
-    Fake::end_play(reinterpret_cast<AActor*>(Fake::game.controller), static_cast<EEndPlayReason>(0));
+    ASSERT_TRUE(Fake::records.at(Fake::game.perk).roots == 1 && Fake::records.at(Fake::game.other_perk).roots == 1 && Fake::records.at(Fake::game.locked_perk).roots == 1);
+    end_world();
     ASSERT_TRUE(!Fake::rooted() && Fake::game.removes == 1 && Fake::game.parameter_allocations == 0);
     ASSERT_TRUE(Fake::logged("Spell bar released.") && Fake::game.log.empty());
+    ASSERT_TRUE(Fake::records.at(Fake::game.perk).roots == 0 && Fake::records.at(Fake::game.spell).roots == 0);
     Fake::collect();
     for (auto& [pointer, record] : Fake::records)
     {
@@ -92,7 +92,7 @@ TEST_F(Manager, releases_without_touching_a_bar_the_engine_destroyed)
     auto root = Fake::rooted();
     Fake::records.at(root).alive = false;
     Fake::records.at(root).roots = 0;
-    Fake::end_play(reinterpret_cast<AActor*>(Fake::game.controller), static_cast<EEndPlayReason>(0));
+    end_world();
     ASSERT_FALSE(Fake::rooted());
     ASSERT_TRUE(Fake::game.parameter_allocations == 0 && Fake::game.removes == 0 && Fake::game.log.empty());
     restart();
@@ -285,20 +285,20 @@ TEST_F(Manager, releases_everything_on_unload_and_reports_a_root_that_stays_root
 TEST_F(Manager, unregisters_everything_on_unload_and_survives_a_reload)
 {
     start();
-    ASSERT_TRUE(Fake::game.callbacks.size() == 2 && Fake::engine_tick && Fake::end_play && Fake::game.key_set.key_data.size() == 7);
+    ASSERT_TRUE(Fake::game.callbacks.size() == 1 && Fake::engine_tick && Fake::game.key_set.key_data.size() == 7);
     mod.reset();
-    ASSERT_TRUE(Fake::game.callbacks.empty() && !Fake::engine_tick && !Fake::end_play && Fake::game.key_set.key_data.empty());
+    ASSERT_TRUE(Fake::game.callbacks.empty() && !Fake::engine_tick && Fake::game.key_set.key_data.empty());
     ASSERT_TRUE(!Fake::rooted() && Fake::game.parameter_allocations == 0);
     ASSERT_TRUE(Fake::logged("Spell bar released.") && Fake::game.log.empty());
     for (auto& [hook, custom] : Fake::records.at(Fake::game.functions.at(L"ClientRestart")).post_hooks) ASSERT_FALSE(hook);
     mod.emplace(directory);
     mod->on_unreal_init();
-    ASSERT_TRUE(Fake::game.callbacks.size() == 2 && Fake::logged("Spell bar mod started.") && Fake::game.log.empty());
+    ASSERT_TRUE(Fake::game.callbacks.size() == 1 && Fake::logged("Spell bar mod started.") && Fake::game.log.empty());
     configure();
     restart();
     tick();
     ASSERT_TRUE(Fake::rooted() && Fake::game.adds == 2 && Fake::game.key_set.key_data.size() == 7);
-    Fake::end_play(reinterpret_cast<AActor*>(Fake::game.controller), static_cast<EEndPlayReason>(0));
+    end_world();
     ASSERT_FALSE(Fake::rooted());
 }
 }

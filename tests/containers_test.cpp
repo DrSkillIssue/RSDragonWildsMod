@@ -89,11 +89,11 @@ TEST_F(Containers, logs_a_missing_item_once_and_does_not_retry)
     ASSERT_TRUE(capacity() == 150 && Fake::game.asset_loads == 1 && Fake::game.log.empty());
 }
 
-TEST_F(Containers, survives_end_play_and_un_roots_on_unload)
+TEST_F(Containers, survives_the_controller_dying_and_un_roots_on_unload)
 {
     load();
     configure();
-    Fake::end_play(reinterpret_cast<AActor*>(Fake::game.controller), static_cast<EEndPlayReason>(0));
+    end_world();
     ASSERT_TRUE(roots() == 1 && Fake::logged("Spell bar released.") && Fake::game.log.empty());
     restart();
     tick();

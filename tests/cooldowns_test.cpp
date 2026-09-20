@@ -138,7 +138,7 @@ TEST_F(Cooldowns, restores_a_running_cooldown_after_a_restart)
     Fake::cast_entry(0, Fake::game.spell, 290);
     Fake::game.world_time = 300;
     Fake::time += 5000;
-    Fake::end_play(reinterpret_cast<AActor*>(Fake::game.controller), static_cast<EEndPlayReason>(0));
+    end_world();
     restart();
     tick(1000);
     ASSERT_TRUE(Fake::rooted());

@@ -22,12 +22,14 @@ public:
     void describe(Frame& frame);
     UObject* pawn(UObject* controller) const { return object_at(controller, m_pawn_offset); }
     UObject* identity() const { return m_identity; }
+    bool alive() const { return m_reference.Get() != nullptr; }
     SpellWheel& wheel() { return m_wheel; }
     Spells& spells() { return m_spells; }
     void reset();
 
 private:
     UObject* m_identity{};
+    FWeakObjectPtr m_reference;
     UWorld* m_world{};
     UObject* m_outer{};
     int m_pawn_offset{};

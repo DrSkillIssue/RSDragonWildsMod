@@ -270,24 +270,31 @@ void Bar::open_picker(Player& player)
     attach(list, L"AddChild", grid);
     const auto spells = player.spells().unlocked();
     m_rows.reserve(spells.size());
-    const FProperty* icon_field = spells.empty() ? nullptr : property(spells.front()->GetClassPrivate(), L"SpellIcon");
+    const FProperty* icon_field = spells.empty() ? nullptr : property(spells.front()->spell->GetClassPrivate(), L"SpellIcon");
     auto slot_class = static_cast<UStruct*>(game_class(spell_slot_class_path));
     const auto spell_offset = property(slot_class, L"SpellData")->GetOffset_ForInternal();
+    auto perk_field = property(slot_class, L"PerkData");
     auto unlocked_field = static_cast<FBoolProperty*>(property(slot_class, L"bUnlocked"));
     const auto item_offset = property(slot_class, L"ItemImage")->GetOffset_ForInternal();
     const auto lock_offset = property(slot_class, L"LockImage")->GetOffset_ForInternal();
-    for (auto spell : spells)
+    Call reference(find(L"/Script/Engine.Default__KismetSystemLibrary"), L"Conv_ObjectToSoftObjectReference");
+    const auto soft = reference[L"ReturnValue"];
+    soft.check(L"SoftObjectProperty", perk_field->GetElementSize());
+    for (auto entry : spells)
     {
         auto cell = reinterpret_cast<unsigned char*>(game_widget(slot_class, m_owner));
-        Typed<UObject*>{ cell + spell_offset }.write(spell);
+        Typed<UObject*>{ cell + spell_offset }.write(entry->spell);
+        reference[L"Object"].write(L"ObjectProperty", entry->perk);
+        reference.run();
+        perk_field->CopyCompleteValue(cell + perk_field->GetOffset_ForInternal(), soft.data);
         unlocked_field->SetPropertyValue(cell + unlocked_field->GetOffset_ForInternal(), true);
         Call brush(Typed<UObject*>{ cell + item_offset }.read(), L"SetBrushFromSoftTexture");
         auto destination = brush[L"SoftTexture"];
-        destination.field->CopyCompleteValue(destination.data, reinterpret_cast<unsigned char*>(spell) + icon_field->GetOffset_ForInternal());
+        destination.field->CopyCompleteValue(destination.data, reinterpret_cast<unsigned char*>(entry->spell) + icon_field->GetOffset_ForInternal());
         brush.run();
         set(Typed<UObject*>{ cell + lock_offset }.read(), L"SetVisibility", L"InVisibility", L"Collapsed");
         attach(grid, L"AddChildToWrapBox", reinterpret_cast<UObject*>(cell));
-        m_rows.push_back({ spell, Retained<bool>(reinterpret_cast<UObject*>(cell), L"IsHovered", L"ReturnValue") });
+        m_rows.push_back({ entry->spell, Retained<bool>(reinterpret_cast<UObject*>(cell), L"IsHovered", L"ReturnValue") });
     }
     auto panel_slot = attach(m_canvas, L"AddChildToCanvas", size);
     set(panel_slot, L"SetAnchors", L"InAnchors", L"(Minimum=(X=0.5,Y=1),Maximum=(X=0.5,Y=1))");

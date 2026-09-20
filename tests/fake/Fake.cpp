@@ -20,7 +20,6 @@ std::unordered_map<const void*, Record> records;
 std::vector<std::unique_ptr<unsigned char[]>> storage;
 std::vector<UObject*> objects{nullptr};
 std::vector<std::wstring> names{L"None"};
-std::function<void(AActor*, EEndPlayReason)> end_play;
 std::function<void(Hook::TCallbackIterationData<void>&, UEngine*, float, bool)> engine_tick;
 std::uint64_t time = 1000;
 

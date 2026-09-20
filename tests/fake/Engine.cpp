@@ -141,19 +141,6 @@ GlobalCallbackId RegisterEngineTickPostCallback(std::function<void(TCallbackIter
     return Fake::game.callback_ids;
 }
 
-GlobalCallbackId RegisterEndPlayPreCallback(std::function<void(TCallbackIterationData<void>&, AActor*, EEndPlayReason)> callback, FCallbackOptions options)
-{
-    assert(options.OwnerModName == L"DragonwildsSpellBar" && !options.HookName.empty());
-    Fake::end_play = [callback = std::move(callback)](AActor* actor, EEndPlayReason reason)
-    {
-        TCallbackIterationData<void> data;
-        callback(data, actor, reason);
-    };
-    Fake::game.callbacks.push_back(++Fake::game.callback_ids);
-    Fake::game.end_play_callback = Fake::game.callback_ids;
-    return Fake::game.callback_ids;
-}
-
 bool UnregisterCallback(GlobalCallbackId id)
 {
     auto& live = Fake::game.callbacks;
@@ -161,7 +148,6 @@ bool UnregisterCallback(GlobalCallbackId id)
     if (found == live.end()) return false;
     live.erase(found);
     if (id == Fake::game.tick_callback) Fake::engine_tick = nullptr;
-    if (id == Fake::game.end_play_callback) Fake::end_play = nullptr;
     return true;
 }
 }

@@ -9,13 +9,6 @@ namespace Mods
 class Spells
 {
 public:
-    void bind(UObject* controller);
-    UObject* find(const std::wstring& name) const;
-    std::vector<UObject*> unlocked();
-    float cooldown(UObject* spell);
-    void reset();
-
-private:
     struct Entry
     {
         UObject* spell;
@@ -23,8 +16,16 @@ private:
         UObject* perk;
         bool needs_unlocking;
     };
+    void bind(UObject* controller);
+    UObject* find(const std::wstring& name) const;
+    std::vector<const Entry*> unlocked();
+    float cooldown(UObject* spell);
+    void reset();
+
+private:
     std::optional<Call> m_unlocked;
     std::vector<Entry> m_entries;
+    std::vector<UObject*> m_perks;
 
     bool unlocked(UObject* perk);
 };

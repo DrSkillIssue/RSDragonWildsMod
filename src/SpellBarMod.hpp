@@ -27,7 +27,6 @@ private:
     Mods::Containers m_containers;
     std::optional<Mods::FunctionHook> m_restart;
     RC::Unreal::Hook::GlobalCallbackId m_tick_callback{};
-    RC::Unreal::Hook::GlobalCallbackId m_end_play_callback{};
     std::atomic<std::uint32_t> m_presses{};
 
     void configure();

@@ -69,6 +69,7 @@ void setup()
     field(reinterpret_cast<UStruct*>(slot_class.pointer),L"LockImage",L"ObjectProperty",8,8);
     field(reinterpret_cast<UStruct*>(slot_class.pointer),L"SpellData",L"ObjectProperty",16,8);
     field(reinterpret_cast<UStruct*>(slot_class.pointer),L"bUnlocked",L"BoolProperty",24,1);
+    field(reinterpret_cast<UStruct*>(slot_class.pointer),L"PerkData",L"SoftObjectProperty",32,40);
     game.loadable.emplace(L"/Game/UI/InGameMenus/TopNavScreens/SpellBook/WBP_SpellSlot.WBP_SpellSlot_C",slot_class.pointer);
     function(L"SetInnerSlotPadding",16,{{L"InPadding",L"StructProperty",0,16}});
     function(L"IsPlayerReady",1,{{L"ReturnValue",L"BoolProperty",0,1}});
@@ -148,7 +149,7 @@ void setup()
     member(perk_a.pointer,L"PerkModules").write(L"ArrayProperty",Array{reinterpret_cast<unsigned char*>(modules_a),2,2});
     member(perk_b.pointer,L"PerkModules").write(L"ArrayProperty",Array{reinterpret_cast<unsigned char*>(modules_b),1,1});
     member(perk_c.pointer,L"PerkModules").write(L"ArrayProperty",Array{reinterpret_cast<unsigned char*>(modules_c),1,1});
-    game.locked_perk=perk_c.pointer;
+    game.perk=perk_a.pointer; game.other_perk=perk_b.pointer; game.locked_perk=perk_c.pointer;
     member(game.spell,L"CooldownModifierPerk").member(L"CooldownPerk").write(L"ObjectProperty",perk_a.pointer);
     member(game.spell,L"CooldownModifierPerk").member(L"ModifiedCooldown").write<float>(L"FloatProperty",25);
     member(game.other,L"CooldownModifierPerk").member(L"CooldownPerk").write(L"ObjectProperty",perk_c.pointer);

@@ -16,7 +16,6 @@ SpellBarMod::SpellBarMod(const std::filesystem::path& directory) : m_configurati
 SpellBarMod::~SpellBarMod()
 {
     Hook::UnregisterCallback(m_tick_callback);
-    Hook::UnregisterCallback(m_end_play_callback);
     m_restart.reset();
     release();
     m_containers.stop();
@@ -37,10 +36,6 @@ void SpellBarMod::on_unreal_init()
     {
         tick(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
     }, { false, true, L"DragonwildsSpellBar", L"Tick" });
-    m_end_play_callback = Hook::RegisterEndPlayPreCallback([this](Hook::TCallbackIterationData<void>&, AActor* actor, EEndPlayReason)
-    {
-        if (reinterpret_cast<UObject*>(actor) == m_player.identity()) release();
-    }, { false, true, L"DragonwildsSpellBar", L"EndPlay" });
     Log::write("Spell bar mod started.");
 }
 
@@ -112,6 +107,7 @@ void SpellBarMod::tick(std::uint64_t now)
     {
         if (m_configuration.poll(now)) configure();
         frame.presses = m_presses.exchange(0);
+        if (m_player.identity() && !m_player.alive()) release();
         if (m_player.identity()) m_player.describe(frame);
         m_spell_bar.sample(frame);
         if (m_spell_bar.wants_step(frame)) m_spell_bar.step(frame);

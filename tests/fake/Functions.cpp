@@ -115,8 +115,10 @@ void is_perk_unlocked(UObject*, const Parameters& in)
 
 void soft_reference(UObject*, const Parameters& in)
 {
-    auto& record = records.at(in.at<UObject*>(L"Object").read());
+    auto object = in.at<UObject*>(L"Object").read();
+    auto& record = records.at(object);
     if (!record.serial) record.serial = static_cast<int>(++game.serials);
+    in.at<UObject*>(L"ReturnValue").write(object);
 }
 
 void add_child(UObject* self, const Parameters& in)

@@ -29,6 +29,7 @@ void Player::bind(UObject* controller)
     }
     m_wheel.bind(controller);
     m_spells.bind(controller);
+    m_reference = weak(controller);
     m_identity = controller;
 }
 
@@ -47,6 +48,7 @@ void Player::describe(Frame& frame)
 void Player::reset()
 {
     m_identity = nullptr;
+    m_reference = {};
     m_world = nullptr;
     m_outer = nullptr;
     m_wheel.reset();

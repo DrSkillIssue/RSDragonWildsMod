@@ -26,6 +26,7 @@ void Spells::bind(UObject* controller)
             load.run();
             auto perk = load[L"ReturnValue"].read<UObject*>(L"ObjectProperty");
             if (!perk) continue;
+            perk->SetRootSet();
             const auto modules = member(perk, L"PerkModules").elements(L"ObjectProperty", sizeof(UObject*));
             const auto module_array = modules.array();
             for (int m = 0; m < module_array.count; ++m)
@@ -39,6 +40,7 @@ void Spells::bind(UObject* controller)
                 spell->SetRootSet();
                 m_entries.push_back({ spell, std::move(name), perk, member(spell, L"bNeedsUnlocking").boolean() });
             }
+            m_perks.push_back(perk);
         }
     }
     std::ranges::sort(m_entries, {}, &Entry::name);
@@ -65,12 +67,12 @@ UObject* Spells::find(const std::wstring& name) const
     return nullptr;
 }
 
-std::vector<UObject*> Spells::unlocked()
+std::vector<const Spells::Entry*> Spells::unlocked()
 {
-    std::vector<UObject*> spells;
+    std::vector<const Entry*> spells;
     spells.reserve(m_entries.size());
     for (const auto& entry : m_entries)
-        if (!entry.needs_unlocking || unlocked(entry.perk)) spells.push_back(entry.spell);
+        if (!entry.needs_unlocking || unlocked(entry.perk)) spells.push_back(&entry);
     return spells;
 }
 
@@ -85,7 +87,9 @@ float Spells::cooldown(UObject* spell)
 void Spells::reset()
 {
     for (const auto& entry : m_entries) entry.spell->ClearRootSet();
+    for (auto perk : m_perks) perk->ClearRootSet();
     m_entries.clear();
+    m_perks.clear();
     m_unlocked.reset();
 }
 }

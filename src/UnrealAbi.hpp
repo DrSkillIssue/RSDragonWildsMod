@@ -15,13 +15,11 @@ class UScriptStruct;
 class FProperty;
 class UFunction;
 class UWorld;
-class AActor;
 class UObject;
 class FOutputDevice;
 enum class EObjectFlags : std::uint32_t;
 enum class EPropertyFlags : std::uint64_t;
 enum class EFindName : int;
-enum class EEndPlayReason : int;
 class FString;
 struct ObjectSearcher;
 template<class T> class TObjectPtr { public: T* value; };
@@ -216,7 +214,6 @@ namespace Hook
     template<class ReturnType> class TCallbackIterationData;
     using GlobalCallbackId = std::uint64_t;
     __declspec(dllimport) GlobalCallbackId RegisterEngineTickPostCallback(std::function<void(TCallbackIterationData<void>&, UEngine*, float, bool)>, FCallbackOptions);
-    __declspec(dllimport) GlobalCallbackId RegisterEndPlayPreCallback(std::function<void(TCallbackIterationData<void>&, AActor*, EEndPlayReason)>, FCallbackOptions);
     __declspec(dllimport) bool UnregisterCallback(GlobalCallbackId);
 }
 static_assert(sizeof(Hook::FCallbackOptions) == 8 + 2 * sizeof(std::wstring));
