@@ -26,8 +26,8 @@ jobs:
           key: xwin-0.10.0-crt-14.44.17.14-sdk-10.0.26100
       - if: steps.xwin.outputs.cache-hit != 'true'
         run: |
-          curl -sSL https://github.com/Jake-Shadle/xwin/releases/download/0.10.0/xwin-0.10.0-x86_64-unknown-linux-musl.tar.gz | tar xz --strip-components=1 xwin-0.10.0-x86_64-unknown-linux-musl/xwin
-          ./xwin --accept-license --temp --crt-version 14.44.17.14 --sdk-version 10.0.26100 splat --output xwin
+          curl -sSL https://github.com/Jake-Shadle/xwin/releases/download/0.10.0/xwin-0.10.0-x86_64-unknown-linux-musl.tar.gz | tar xz -C "$RUNNER_TEMP" --strip-components=1 xwin-0.10.0-x86_64-unknown-linux-musl/xwin
+          "$RUNNER_TEMP/xwin" --accept-license --temp --crt-version 14.44.17.14 --sdk-version 10.0.26100 splat --output xwin
       - run: cmake --workflow --preset cross
       - uses: actions/upload-artifact@v7
         with:
