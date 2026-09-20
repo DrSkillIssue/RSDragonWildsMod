@@ -1,17 +1,15 @@
 # DragonwildsSpellBar
 
-A UE4SS mod for RuneScape: Dragonwilds. A spell bar with up to eight key-bound slots above the item bar, a spell picker built from the game's own spellbook slots, cooldown shading, and larger watering cans and compost buckets.
+A UE4SS mod for RuneScape: Dragonwilds. A spell bar with up to eight key-bound slots above the item bar, a spell picker built from the game's own spellbook slots, cooldown shading, and larger watering cans and compost buckets. The release zip includes UE4SS.
 
 ## Install
-
-Requires UE4SS installed in the game. The mod is built for UE4SS build `f6d5f942`.
 
 1. Download `DragonwildsSpellBar.zip` from the Releases page.
 2. In Steam, right click RuneScape: Dragonwilds, choose Manage, then Browse local files. The folder that opens is the game folder.
 3. Extract the zip into that folder. Windows asks to merge the `RSDragonwilds` folder; accept.
 4. Start the game. Open the inventory, right click a slot on the bar, and left click a spell. Keys are `F5` to `F8` until you change `mods.ini`.
 
-To remove the mod, delete `RSDragonwilds\Binaries\Win64\ue4ss\Mods\DragonwildsSpellBar` in the game folder while the game is closed.
+To remove the mod and UE4SS, delete `RSDragonwilds\Binaries\Win64\dwmapi.dll` and the folder `RSDragonwilds\Binaries\Win64\ue4ss` while the game is closed.
 
 ## Settings
 

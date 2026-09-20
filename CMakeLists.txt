@@ -21,7 +21,17 @@ set(MOD_SOURCES
 
 set(MOD_FOLDER RSDragonwilds/Binaries/Win64/ue4ss/Mods/DragonwildsSpellBar)
 
+include(FetchContent)
+
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+    FetchContent_Declare(
+        ue4ss
+        URL https://github.com/UE4SS-RE/RE-UE4SS/releases/download/experimental/UE4SS_v3.0.1-1135-gf6d5f942.zip
+        URL_HASH SHA256=e96640054e0da71232ea63d105eeefb96de1ece609b113f0c6e617b83addbac2
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    )
+    FetchContent_MakeAvailable(ue4ss)
+
     find_program(LLVM_DLLTOOL_EXECUTABLE llvm-dlltool REQUIRED)
     add_custom_command(
         OUTPUT "${CMAKE_BINARY_DIR}/UE4SS.lib"
@@ -48,6 +58,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL Windows)
         THIRD-PARTY-NOTICES.txt
         DESTINATION ${MOD_FOLDER}
     )
+    install(FILES ${ue4ss_SOURCE_DIR}/dwmapi.dll DESTINATION RSDragonwilds/Binaries/Win64)
+    install(FILES
+        ${ue4ss_SOURCE_DIR}/ue4ss/UE4SS.dll
+        ${ue4ss_SOURCE_DIR}/ue4ss/UE4SS-settings.ini
+        ${ue4ss_SOURCE_DIR}/ue4ss/LICENSE
+        DESTINATION RSDragonwilds/Binaries/Win64/ue4ss
+    )
 
     set(CPACK_GENERATOR ZIP)
     set(CPACK_PACKAGE_FILE_NAME DragonwildsSpellBar)
@@ -57,7 +74,6 @@ else()
     enable_testing()
     find_program(LOCALEDEF_EXECUTABLE localedef REQUIRED)
 
-    include(FetchContent)
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
