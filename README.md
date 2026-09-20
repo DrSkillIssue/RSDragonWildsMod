@@ -5,8 +5,8 @@ A UE4SS mod for RuneScape: Dragonwilds. A spell bar with up to eight key-bound s
 ## Install
 
 1. Download `DragonwildsSpellBar.zip` from the Releases page.
-2. In Steam, right click RuneScape: Dragonwilds, choose Manage, then Browse local files. The folder that opens is the game folder.
-3. Extract the zip into that folder. Windows asks to merge the `RSDragonwilds` folder; accept.
+2. In Steam, right click RuneScape: Dragonwilds, choose Manage, then Browse local files. The folder that opens is the game folder. It holds `RSDragonwilds.exe` and a folder named `RSDragonwilds`.
+3. Extract the zip into the game folder. The zip's `RSDragonwilds` folder merges into the existing one; accept the merge. The mod lands in `RSDragonwilds\Binaries\Win64\ue4ss\Mods\DragonwildsSpellBar`.
 4. Start the game. Open the inventory, right click a slot on the bar, and left click a spell. Keys are `F5` to `F8` until you change `mods.ini`.
 
 To remove the mod and UE4SS, delete `RSDragonwilds\Binaries\Win64\dwmapi.dll` and the folder `RSDragonwilds\Binaries\Win64\ue4ss` while the game is closed.
