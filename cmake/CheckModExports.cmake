@@ -1,0 +1,16 @@
+set(required RegisterEndPlayPreCallback RegisterEngineTickPostCallback IsRootSet start_mod uninstall_mod)
+set(forbidden RegisterProcessEventPreCallback hostfxr dw_spellbar_ trace.enabled)
+
+foreach(name IN LISTS required)
+    file(STRINGS "${DLL}" hits REGEX "${name}")
+    if(NOT hits)
+        message(FATAL_ERROR "${DLL} is missing ${name}")
+    endif()
+endforeach()
+
+foreach(name IN LISTS forbidden)
+    file(STRINGS "${DLL}" hits REGEX "${name}")
+    if(hits)
+        message(FATAL_ERROR "${DLL} contains ${name}")
+    endif()
+endforeach()

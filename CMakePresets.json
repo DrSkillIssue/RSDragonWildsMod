@@ -1,0 +1,39 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 28, "patch": 0 },
+  "configurePresets": [
+    { "name": "windows", "binaryDir": "${sourceDir}/build/windows" },
+    { "name": "cross", "generator": "Ninja", "binaryDir": "${sourceDir}/build/cross", "toolchainFile": "${sourceDir}/cmake/xwin-clang-cl.cmake",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "XWIN_DIR": "${sourceDir}/xwin" } },
+    { "name": "tests", "binaryDir": "${sourceDir}/build/tests", "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" } }
+  ],
+  "buildPresets": [
+    { "name": "windows", "configurePreset": "windows", "configuration": "Release" },
+    { "name": "cross", "configurePreset": "cross" },
+    { "name": "tests", "configurePreset": "tests" }
+  ],
+  "testPresets": [
+    { "name": "tests", "configurePreset": "tests", "output": { "outputOnFailure": true } }
+  ],
+  "packagePresets": [
+    { "name": "windows", "configurePreset": "windows", "configurations": [ "Release" ] },
+    { "name": "cross", "configurePreset": "cross" }
+  ],
+  "workflowPresets": [
+    { "name": "windows", "steps": [
+      { "type": "configure", "name": "windows" },
+      { "type": "build", "name": "windows" },
+      { "type": "package", "name": "windows" }
+    ] },
+    { "name": "cross", "steps": [
+      { "type": "configure", "name": "cross" },
+      { "type": "build", "name": "cross" },
+      { "type": "package", "name": "cross" }
+    ] },
+    { "name": "tests", "steps": [
+      { "type": "configure", "name": "tests" },
+      { "type": "build", "name": "tests" },
+      { "type": "test", "name": "tests" }
+    ] }
+  ]
+}

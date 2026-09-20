@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - run: sudo apt-get install -y clang-19 lld-19 llvm-19
+      - run: echo /usr/lib/llvm-19/bin >> "$GITHUB_PATH"
+      - uses: actions/cache@v6
+        id: xwin
+        with:
+          path: xwin
+          key: xwin-0.10.0-crt-14.44.17.14-sdk-10.0.26100
+      - if: steps.xwin.outputs.cache-hit != 'true'
+        run: |
+          curl -sSL https://github.com/Jake-Shadle/xwin/releases/download/0.10.0/xwin-0.10.0-x86_64-unknown-linux-musl.tar.gz | tar xz --strip-components=1 xwin-0.10.0-x86_64-unknown-linux-musl/xwin
+          ./xwin --accept-license --temp --crt-version 14.44.17.14 --sdk-version 10.0.26100 splat --output xwin
+      - run: cmake --workflow --preset cross
+      - uses: softprops/action-gh-release@v3
+        with:
+          files: build/cross/DragonwildsSpellBar.zip
+          generate_release_notes: true
