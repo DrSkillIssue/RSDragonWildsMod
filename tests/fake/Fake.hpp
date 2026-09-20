@@ -56,6 +56,9 @@ struct State
     double last_icon_x{}, last_icon_y{}, last_scale_y{}, world_time{};
     int perk_count = 3;
     UObject* wheel{}, *wheel_template{}, *spellbook_wheel{}, *component{}, *spell{}, *other{}, *magic{};
+    UObject* hud{}, *tooltip_manager{}, *perk_tooltip{};
+    std::vector<UObject*> despawned;
+    int hover_queries{};
     UObject* skill{}, *skill_default{}, *locked_spell{}, *perk{}, *other_perk{}, *locked_perk{}, *perk_component{};
     unsigned char perk_soft[3 * 40]{};
     UObject* assigned_spells[48]{};

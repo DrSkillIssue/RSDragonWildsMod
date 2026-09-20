@@ -7,13 +7,12 @@ namespace Mods
 void Setup::frame(Bar& bar, const Settings::SpellBar& config, const Frame& current)
 {
     m_active = current.cursor;
-    if (!m_active && bar.picker_open()) bar.close_picker();
+    if (!m_active && bar.picker_open()) bar.close_picker(false);
     const auto click = current.presses & (left_click | right_click | middle_click);
     if (!m_active || !click) return;
     if (bar.picker_open())
     {
-        auto spell = click & left_click ? bar.picked() : nullptr;
-        bar.close_picker();
+        auto spell = bar.close_picker(click & left_click);
         if (!spell) return;
         m_edit = Edit{ m_picker_slot, spell->GetName() };
         DW_LOG_DEBUG("Panel picked {} for slot {}.", std::string(m_edit->spell.begin(), m_edit->spell.end()), m_picker_slot + 1);

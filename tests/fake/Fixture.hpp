@@ -33,6 +33,12 @@ struct Fixture : ::testing::Test
     void tick() { mod->tick(Fake::time); }
     void tick(std::uint64_t advance) { Fake::time += advance; tick(); }
     void restart() { Fake::call(Fake::game.controller, L"ClientRestart"); }
+    void hover(UObject* row)
+    {
+        Fake::game.hovered_frame = row;
+        member(row, L"bIsTooltipSpawned").write(L"BoolProperty", true);
+        member(row, L"TooltipWidgetClass").write(L"ClassProperty", Fake::game.perk_tooltip);
+    }
     void end_world() { Fake::records.at(Fake::game.controller).serial = 0; tick(); }
 
     void start()

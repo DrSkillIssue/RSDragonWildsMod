@@ -275,6 +275,7 @@ void Bar::open_picker(Player& player)
     const auto spell_offset = property(slot_class, L"SpellData")->GetOffset_ForInternal();
     auto perk_field = property(slot_class, L"PerkData");
     auto unlocked_field = static_cast<FBoolProperty*>(property(slot_class, L"bUnlocked"));
+    auto spawned_field = static_cast<FBoolProperty*>(property(slot_class, L"bIsTooltipSpawned"));
     const auto item_offset = property(slot_class, L"ItemImage")->GetOffset_ForInternal();
     const auto lock_offset = property(slot_class, L"LockImage")->GetOffset_ForInternal();
     Call reference(find(L"/Script/Engine.Default__KismetSystemLibrary"), L"Conv_ObjectToSoftObjectReference");
@@ -294,7 +295,7 @@ void Bar::open_picker(Player& player)
         brush.run();
         set(Typed<UObject*>{ cell + lock_offset }.read(), L"SetVisibility", L"InVisibility", L"Collapsed");
         attach(grid, L"AddChildToWrapBox", reinterpret_cast<UObject*>(cell));
-        m_rows.push_back({ entry->spell, Retained<bool>(reinterpret_cast<UObject*>(cell), L"IsHovered", L"ReturnValue") });
+        m_rows.push_back({ entry->spell, reinterpret_cast<UObject*>(cell), Retained<bool>(reinterpret_cast<UObject*>(cell), L"IsHovered", L"ReturnValue"), { spawned_field, cell + spawned_field->GetOffset_ForInternal() } });
     }
     auto panel_slot = attach(m_canvas, L"AddChildToCanvas", size);
     set(panel_slot, L"SetAnchors", L"InAnchors", L"(Minimum=(X=0.5,Y=1),Maximum=(X=0.5,Y=1))");
@@ -305,16 +306,27 @@ void Bar::open_picker(Player& player)
     m_picker_visibility->set(L"Visible");
 }
 
-void Bar::close_picker()
+UObject* Bar::close_picker(bool pick)
 {
     m_picker_shown = false;
-    m_picker_visibility->set(L"Collapsed");
-}
-
-UObject* Bar::picked()
-{
     for (auto& row : m_rows)
-        if (row.hovered.get()) return row.spell;
+    {
+        if (!row.tooltip_spawned.read()) continue;
+        const auto spell = pick && row.hovered.get() ? row.spell : nullptr;
+        m_picker_visibility->set(L"Collapsed");
+        Call subsystem(find(L"/Script/Engine.Default__SubsystemBlueprintLibrary"), L"GetWorldSubsystem");
+        subsystem[L"ContextObject"].write(L"ObjectProperty", m_owner);
+        subsystem[L"Class"].write(L"ClassProperty", find(L"/Script/Dominion.HUDUISubsystem"));
+        subsystem.run();
+        Call tooltip(member(subsystem[L"ReturnValue"].read<UObject*>(L"ObjectProperty"), L"TooltipManager").read<UObject*>(L"ObjectProperty"), L"GetMenuTooltip");
+        tooltip[L"TooltipClass"].write(L"ClassProperty", member(row.widget, L"TooltipWidgetClass").read<UObject*>(L"ClassProperty"));
+        tooltip.run();
+        Call despawn(row.widget, L"OnDespawnTooltip");
+        despawn[L"CurrentTooltip"].write(L"ObjectProperty", tooltip[L"ReturnValue"].read<UObject*>(L"ObjectProperty"));
+        despawn.run();
+        return spell;
+    }
+    m_picker_visibility->set(L"Collapsed");
     return nullptr;
 }
 

@@ -60,7 +60,7 @@ TEST_F(Setup, assigns_and_clears_the_spell)
 {
     Fake::game.hovered_frame = frame0;
     press(RC::Input::RIGHT_MOUSE_BUTTON);
-    Fake::game.hovered_frame = Fake::game.rows[0];
+    hover(Fake::game.rows[0]);
     press(RC::Input::LEFT_MOUSE_BUTTON);
     ASSERT_TRUE(ini().find("Slot1 = F5, OtherSpell\n") != std::string::npos);
     ASSERT_TRUE(Fake::logged("Configuration saved from the in-game panel.") && Fake::logged("Configuration accepted.") && Fake::logged("Spell bar released.") && Fake::game.log.empty());
@@ -86,8 +86,10 @@ TEST_F(Setup, picks_an_unlocked_spell_from_the_list)
     ASSERT_TRUE(member(Fake::game.rows[1], L"SpellData").read<UObject*>(L"ObjectProperty") == Fake::game.spell && member(Fake::game.rows[1], L"bUnlocked").boolean());
     ASSERT_TRUE(Fake::object_field(Fake::game.rows[0], 32) == Fake::game.other_perk && Fake::object_field(Fake::game.rows[1], 32) == Fake::game.perk);
     ASSERT_TRUE(Fake::game.class_loads == 2 && Fake::game.log.empty() && ini().find("Slot2 = F6,\n") != std::string::npos);
-    Fake::game.hovered_frame = Fake::game.rows[1];
+    hover(Fake::game.rows[1]);
+    Fake::game.hover_queries = 0;
     press(RC::Input::LEFT_MOUSE_BUTTON);
+    ASSERT_TRUE(Fake::game.despawned.size() == 1 && Fake::game.despawned[0] == Fake::game.rows[1] && Fake::game.hover_queries == 1);
     ASSERT_TRUE(ini().find("Slot2 = F6, TestSpell\n") != std::string::npos);
     ASSERT_TRUE(Fake::logged("Configuration saved from the in-game panel.") && Fake::logged("Configuration accepted.") && Fake::logged("Spell bar released.") && Fake::game.log.empty());
     tick();
@@ -104,6 +106,7 @@ TEST_F(Setup, closes_the_list_without_a_pick)
     Fake::game.hovered_frame = nullptr;
     press(RC::Input::LEFT_MOUSE_BUTTON);
     ASSERT_TRUE(widget(L"SpellBarPickerSize").visibility == L"Collapsed" && Fake::game.log.empty() && ini().find("Slot1 = F5, TestSpell\n") != std::string::npos);
+    ASSERT_TRUE(Fake::game.despawned.empty());
     Fake::game.hovered_frame = frame0;
     const auto constructions = Fake::game.constructions;
     press(RC::Input::RIGHT_MOUSE_BUTTON);

@@ -42,15 +42,16 @@ public:
     bool hovered() { return m_hovered.get(); }
     Slot& slot(int index) { return m_slots[index]; }
     void open_picker(Player& player);
-    void close_picker();
+    UObject* close_picker(bool pick);
     bool picker_open() const { return m_picker_shown; }
-    UObject* picked();
 
 private:
     struct Row
     {
         UObject* spell;
+        UObject* widget;
         Retained<bool> hovered;
+        Flag tooltip_spawned;
     };
     UObject* m_root;
     FWeakObjectPtr m_root_reference;

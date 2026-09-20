@@ -70,6 +70,17 @@ void setup()
     field(reinterpret_cast<UStruct*>(slot_class.pointer),L"SpellData",L"ObjectProperty",16,8);
     field(reinterpret_cast<UStruct*>(slot_class.pointer),L"bUnlocked",L"BoolProperty",24,1);
     field(reinterpret_cast<UStruct*>(slot_class.pointer),L"PerkData",L"SoftObjectProperty",32,40);
+    field(reinterpret_cast<UStruct*>(slot_class.pointer),L"bIsTooltipSpawned",L"BoolProperty",72,1);
+    field(reinterpret_cast<UStruct*>(slot_class.pointer),L"TooltipWidgetClass",L"ClassProperty",80,8);
+    Object subsystem_library(L"SubsystemBlueprintLibrary"); game.paths.emplace(L"/Script/Engine.Default__SubsystemBlueprintLibrary",subsystem_library.pointer);
+    function(L"GetWorldSubsystem",24,{{L"ContextObject",L"ObjectProperty",0,8},{L"Class",L"ClassProperty",8,8},{L"ReturnValue",L"ObjectProperty",16,8}});
+    Object hud_type(L"HUDUISubsystem"); game.paths.emplace(L"/Script/Dominion.HUDUISubsystem",hud_type.pointer);
+    field(reinterpret_cast<UStruct*>(hud_type.pointer),L"TooltipManager",L"ObjectProperty",0,8);
+    Object hud(L"HudSubsystem",reinterpret_cast<UClass*>(hud_type.pointer)), tooltip_manager(L"TooltipManager"), perk_tooltip(L"PerkTooltip");
+    game.hud=hud.pointer; game.tooltip_manager=tooltip_manager.pointer; game.perk_tooltip=perk_tooltip.pointer;
+    member(hud.pointer,L"TooltipManager").write(L"ObjectProperty",tooltip_manager.pointer);
+    function(L"GetMenuTooltip",24,{{L"TooltipClass",L"ClassProperty",0,8},{L"bShouldCreate",L"BoolProperty",8,1},{L"ReturnValue",L"ObjectProperty",16,8}});
+    function(L"OnDespawnTooltip",8,{{L"CurrentTooltip",L"ObjectProperty",0,8}});
     game.loadable.emplace(L"/Game/UI/InGameMenus/TopNavScreens/SpellBook/WBP_SpellSlot.WBP_SpellSlot_C",slot_class.pointer);
     function(L"SetInnerSlotPadding",16,{{L"InPadding",L"StructProperty",0,16}});
     function(L"IsPlayerReady",1,{{L"ReturnValue",L"BoolProperty",0,1}});

@@ -85,6 +85,7 @@ void create_widget(UObject*, const Parameters& in)
     record.collectable = true;
     for (auto field = records.at(type).children; field; field = records.at(field).next)
     {
+        if (records.at(field).kind != L"ObjectProperty") continue;
         Object block(L"TooltipBlock");
         auto& child = records.at(block.pointer);
         child.outer = widget.pointer;
@@ -111,6 +112,24 @@ void perks_for_skill(UObject*, const Parameters& in)
 void is_perk_unlocked(UObject*, const Parameters& in)
 {
     in.at<bool>(L"ReturnValue").write(in.at<UObject*>(L"InSkillPerkData").read() != game.locked_perk);
+}
+
+void world_subsystem(UObject*, const Parameters& in)
+{
+    assert(in.at<UObject*>(L"ContextObject").read() == game.controller && in.at<UObject*>(L"Class").read() == game.paths.at(L"/Script/Dominion.HUDUISubsystem"));
+    in.at<UObject*>(L"ReturnValue").write(game.hud);
+}
+
+void menu_tooltip(UObject* self, const Parameters& in)
+{
+    assert(self == game.tooltip_manager && !in.at<bool>(L"bShouldCreate").read());
+    in.at<UObject*>(L"ReturnValue").write(in.at<UObject*>(L"TooltipClass").read() == game.perk_tooltip ? game.perk_tooltip : nullptr);
+}
+
+void despawn_tooltip(UObject* self, const Parameters& in)
+{
+    assert(in.at<UObject*>(L"CurrentTooltip").read() == game.perk_tooltip);
+    game.despawned.push_back(self);
 }
 
 void soft_reference(UObject*, const Parameters& in)
@@ -173,6 +192,7 @@ void set_render_scale(UObject*, const Parameters& in)
 void is_hovered(UObject* self, const Parameters& in)
 {
     const bool root = records.at(self).roots != 0;
+    if (records.at(self).name == L"Row") ++game.hover_queries;
     in.at<bool>(L"ReturnValue").write(self == game.hovered_frame || (root && game.hovered_frame));
 }
 
@@ -223,6 +243,9 @@ constexpr Handler handlers[] = {
     {L"Create", create_widget},
     {L"SetToolTip", set_tooltip},
     {L"Conv_ObjectToSoftObjectReference", soft_reference},
+    {L"GetWorldSubsystem", world_subsystem},
+    {L"GetMenuTooltip", menu_tooltip},
+    {L"OnDespawnTooltip", despawn_tooltip},
     {L"AddChildToCanvas", add_child},
     {L"SetContent", add_child},
     {L"AddChildToHorizontalBox", add_child},
